@@ -44,11 +44,11 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(len(data["categories"])) # categories exist
         pass
 
-    def test_405_for_invalid_category_endpoint(self):
+    def test_404_for_invalid_category_endpoint(self):
         res = self.client().get('/api/v1/categories/3')
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code,405)
+        self.assertEqual(res.status_code,404)
         self.assertEqual(data["success"],False)
         self.assertTrue(data["error"])
         self.assertTrue(data["message"])
