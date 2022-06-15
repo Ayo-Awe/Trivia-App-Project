@@ -1,4 +1,5 @@
 import os
+from unicodedata import category
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -7,6 +8,13 @@ import random
 from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
+
+def format_categories(categories):
+    result = {}
+    for category in categories:
+        category = category.format()
+        result[category["id"]] = category["type"]
+    return result
 
 def create_app(test_config=None):
     # create and configure the app
@@ -36,26 +44,49 @@ def create_app(test_config=None):
     """
     @app.route("/api/v1/categories", methods=["GET"])
     def get_all_categories():
-        try:
-            # get all categories from database
-            categories = Category.query.all()
-            #format each category
-            formatted_categories = [category.format() for category in categories]
 
-            # return json response with categories
-            return jsonify({
-                "success":True,
-                "categories":formatted_categories
-            })
-        except:
-            abort(422)
+        # get all categories from database
+        categories = Category.query.all()
+        #format each category
+        formatted_categories = format_categories(categories)
+
+        # return json response with categories
+        return jsonify({
+            "success":True,
+            "categories":formatted_categories
+        })
 
 
+    @app.route("/api/v1/questions", methods=["GET"])
+    def get_paginated_questions():
+        questions = Question.query.all()
+        categories = Category.query.all()
+
+        formatted_categories = format_categories(categories)
+
+        page = request.args.get("page", 1, type=int)
+        start = (page - 1) * QUESTIONS_PER_PAGE
+        end = start + QUESTIONS_PER_PAGE
+
+        all_questions = [question.format() for question in questions]
+        current_questions = all_questions[start:end]
+
+        if(len(current_questions)==0):
+            abort(404)
+
+        return jsonify({
+            "success":True,
+            "total_questions":len(all_questions),
+            "questions":current_questions,
+            "categories": formatted_categories,
+            "current_category": "History"
+        })
 
 
         
 
 
+        return ''
     """
     @TODO:
     Create an endpoint to handle GET requests for questions,
