@@ -19,6 +19,18 @@ class TriviaTestCase(unittest.TestCase):
         self.database_path = "postgresql://{}:{}@{}/{}".format("postgres","Aweayo",'localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
+        self.new_question = {
+            'question': "Who is the current Nigerian president",
+            'answer': "Mohammadu Buhari",
+            'category': 4,
+            'difficulty': "2"
+            }
+
+        self.bad_question = {
+            'answer': 4,
+            'category': "bush",
+            }
+
         # binds the app to the current context
         with self.app.app_context():
             self.db = SQLAlchemy()
@@ -101,6 +113,53 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data["error"])
         self.assertTrue(data["message"])
         pass
+    
+    # Tests for question creation
+    def test_create_question(self):
+        res = self.client().post("/api/v1/questions", json=self.new_question)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,200)
+        self.assertEqual(data["success"],True)
+
+        pass
+
+    def test_422_question_creation_failed(self):
+        res = self.client().post("/api/v1/questions", json=self.bad_question)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,422)
+        self.assertEqual(data["success"],False)
+        self.assertTrue(data["error"])
+        self.assertTrue(data["message"])
+        pass
+
+    # Tests for questions search
+    def test_search_for_questions(self):
+        res = self.client().post("/api/v1/questions", json={"searchTerm":"what"})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,200)
+        self.assertEqual(data["success"],True)
+        self.assertEqual(data["total_questions"],8)
+        self.assertTrue(len(data["questions"]))
+        self.assertTrue(data["current_category"])
+
+        pass
+
+    def test_no_question_found(self):
+        res = self.client().post("/api/v1/questions", json={"searchTerm":"scripple tip top shoes on top"})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,200)
+        self.assertEqual(data["success"],True)
+        self.assertEqual(data["total_questions"],0)
+        self.assertEqual(len(data["questions"]),0)
+        self.assertTrue(data["current_category"])
+        
+        pass
+
+    
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
