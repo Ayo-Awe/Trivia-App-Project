@@ -113,7 +113,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data["error"])
         self.assertTrue(data["message"])
         pass
-    
+
     # Tests for question creation
     def test_create_question(self):
         res = self.client().post("/api/v1/questions", json=self.new_question)
@@ -124,11 +124,11 @@ class TriviaTestCase(unittest.TestCase):
 
         pass
 
-    def test_422_question_creation_failed(self):
+    def test_400_question_creation_failed(self):
         res = self.client().post("/api/v1/questions", json=self.bad_question)
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code,422)
+        self.assertEqual(res.status_code,400)
         self.assertEqual(data["success"],False)
         self.assertTrue(data["error"])
         self.assertTrue(data["message"])
