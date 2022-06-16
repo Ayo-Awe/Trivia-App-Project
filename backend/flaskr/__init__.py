@@ -168,9 +168,12 @@ def create_app(test_config=None):
                 "success":True, 
                 })
 
-        except:
-            print(sys.exc_info())
-            abort(400)
+        except Exception as e:
+            code = sys.exc_info()[1].code
+            if code == 400:
+                abort(400)
+            else :
+                abort(422)
 
 
 
