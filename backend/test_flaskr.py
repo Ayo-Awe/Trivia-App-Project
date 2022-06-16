@@ -1,4 +1,5 @@
 import os
+from socketserver import DatagramRequestHandler
 import unittest
 import json
 from flask_sqlalchemy import SQLAlchemy
@@ -54,6 +55,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data["message"])
         pass
 
+    # tests for get questions endpoints
     def test_get_paginated_questions(self):
         res = self.client().get('/api/v1/questions')
         data = json.loads(res.data)
@@ -75,6 +77,29 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data["error"])
         self.assertTrue(data["message"])
 
+        pass
+
+    # tests for delete questions endpoints
+    def test_successful_deletion_of_question(self):
+        res = self.client().delete("/api/v1/questions/2")
+        data = json.loads(res.data)
+
+        question = Question.query.get(2)
+
+        self.assertEqual(res.status_code,200)
+        self.assertEqual(question,None)
+        self.assertEqual(data["success"],True)
+        self.assertEqual(data["deleted"],2)
+        pass
+
+    def test_422_question_does_not_exist(self):
+        res = self.client().delete("/api/v1/questions/200")
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,422)
+        self.assertEqual(data["success"],False)
+        self.assertTrue(data["error"])
+        self.assertTrue(data["message"])
         pass
 
 # Make the tests conveniently executable
