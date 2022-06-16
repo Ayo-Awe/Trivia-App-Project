@@ -4,6 +4,7 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
+import sys
 
 from models import setup_db, Question, Category
 
@@ -130,6 +131,46 @@ def create_app(test_config=None):
     the form will clear and the question will appear at the end of the last page
     of the questions list in the "List" tab.
     """
+
+    @app.route("/api/v1/questions", methods =["POST"])
+    def create_new_questions():
+        body = request.get_json()
+
+        question = body.get("question",None)
+        answer = body.get("answer",None)
+        category = body.get("category",None)
+        difficulty = body.get("difficulty",None)
+        search = body.get("searchTerm",None)
+
+        try:
+            if search:
+                questions = Question.query.filter(Question.question.ilike('%{}%'.format(search))).all()
+                formatted_questions = [t_question.format() for t_question in questions]
+                #print(for)
+
+                return jsonify({
+                    "success":True,
+                    "questions":formatted_questions,
+                    "total_questions":len(questions),
+                    "current_category":"History"
+                })
+            else:
+
+                # create a new question object
+                new_question = Question(question=question,answer=answer,category=category,difficulty=difficulty)
+
+                # commit new question to the database
+                new_question.insert()
+
+                return jsonify({
+                "success":True, 
+                })
+
+        except:
+            print(sys.exc_info())
+            abort(422)
+
+
 
     """
     @TODO:
