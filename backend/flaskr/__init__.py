@@ -197,6 +197,23 @@ def create_app(test_config=None):
     category to be shown.
     """
 
+    @app.route("/api/v1/categories/<int:category_id>/questions",methods=["GET"])
+    def get_question_by_category(category_id):
+        category = Category.query.get(category_id)
+
+        if category == None:
+            abort(404)
+
+        questions = Question.query.filter(Question.category==category_id).all()
+        formatted_questions = [question.format() for question in questions]
+
+        return jsonify({
+            "success": True,
+            "questions": formatted_questions,
+            "total_questions": len(questions),
+            "current_category": category.type
+        })
+
     """
     @TODO:
     Create a POST endpoint to get questions to play the quiz.
