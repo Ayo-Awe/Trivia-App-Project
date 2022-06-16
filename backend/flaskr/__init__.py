@@ -83,10 +83,6 @@ def create_app(test_config=None):
         })
 
 
-        
-
-
-        return ''
     """
     @TODO:
     Create an endpoint to handle GET requests for questions,
@@ -107,7 +103,23 @@ def create_app(test_config=None):
     TEST: When you click the trash icon next to a question, the question will be removed.
     This removal will persist in the database and when you refresh the page.
     """
+    @app.route("/api/v1/questions/<int:id>", methods=["DELETE"])
+    def delete_question(id):
+        try:
+            question = Question.query.get(id)
+            if question == None:
+                abort(404)
 
+            # delete question from database
+            question.delete()
+
+            return (jsonify({
+                "success":True,
+                "deleted":id,
+            }))
+
+        except:
+            abort(422)
     """
     @TODO:
     Create an endpoint to POST a new question,
@@ -158,10 +170,31 @@ def create_app(test_config=None):
     """
 
     @app.errorhandler(404)
-    def method_not_allowed(error):
+    def resource_not_found(error):
         return ( 
             jsonify({"success": False,"error": 404,"message": "resource not found"})
             ,404,
+            )
+
+    @app.errorhandler(400)
+    def bad_request(error):
+        return ( 
+            jsonify({"success": False,"error": 400,"message": "bad request"})
+            ,400,
+            )
+    
+    @app.errorhandler(422)
+    def unproccessable_request(error):
+        return ( 
+            jsonify({"success": False,"error": 422,"message": "unprocessable request"})
+            ,422,
+            )
+
+    @app.errorhandler(405)
+    def method_not_allowed(error):
+        return ( 
+            jsonify({"success": False,"error": 405,"message": "method not allowed"})
+            ,405,
             )
 
 
