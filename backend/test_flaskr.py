@@ -159,6 +159,31 @@ class TriviaTestCase(unittest.TestCase):
         
         pass
 
+    # tests for get questions by categories
+    def test_get_question_based_on_category(self):
+        res = self.client().get("/api/v1/categories/2/questions")
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,200)
+        self.assertEqual(data["success"],True)
+        self.assertEqual(data["total_questions"],4)
+        self.assertTrue(len(data["questions"]))
+        self.assertEqual(data["current_category"],"Art")
+
+        pass
+
+
+    def test_404_category_does_not_exist(self):
+        res = self.client().get("/api/v1/categories/2000/questions")
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,404)
+        self.assertEqual(data["success"],False)
+        self.assertTrue(data["message"])
+        self.assertTrue(data["error"])
+
+        pass
+
     
 
 # Make the tests conveniently executable
