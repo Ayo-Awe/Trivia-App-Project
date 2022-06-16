@@ -155,7 +155,7 @@ def create_app(test_config=None):
                     "current_category":"History"
                 })
             else:
-                if (question==None) or (answer == None) or (category == None) or (difficulty == None):
+                if (question=="") or (answer == "") or (category == None) or (difficulty == None):
                     abort(400)
 
                 # create a new question object
