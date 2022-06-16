@@ -155,6 +155,8 @@ def create_app(test_config=None):
                     "current_category":"History"
                 })
             else:
+                if (question==None) or (answer == None) or (category == None) or (difficulty == None):
+                    abort(400)
 
                 # create a new question object
                 new_question = Question(question=question,answer=answer,category=category,difficulty=difficulty)
@@ -168,7 +170,7 @@ def create_app(test_config=None):
 
         except:
             print(sys.exc_info())
-            abort(422)
+            abort(400)
 
 
 
