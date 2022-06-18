@@ -22,14 +22,15 @@ class TriviaTestCase(unittest.TestCase):
         self.new_question = {
             'question': "Who is the current Nigerian president",
             'answer': "Mohammadu Buhari",
-            'category': 4,
-            'difficulty': "2"
+            'category': 3,
+            'difficulty': 2
             }
 
         self.bad_question = {
             'answer': 4,
             'category': "bush",
             }
+
 
         # binds the app to the current context
         with self.app.app_context():
@@ -183,6 +184,31 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data["error"])
 
         pass
+
+    def test_get_quizzes(self):
+        res = self.client().post("/api/v1/quizzes",json = {"quiz_category":{"type":"History","id":4}, "previous_questions":[5,9]})
+        data = json.loads(res.data)
+
+
+        self.assertEqual(res.status_code,200)
+        self.assertEqual(data["success"],True)
+        self.assertNotIn(data["question"]["id"],[5,9])
+
+        pass
+
+    def test_no_questions(self):
+        res = self.client().post("/api/v1/quizzes",json = {"quiz_category":{"type":"History","id":4},"previous_questions":[5,9,12,23]})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,200)
+        self.assertEqual(data["success"],True)
+        self.assertIsNone(data["question"])
+
+        pass
+
+
+
+
 
     
 
