@@ -1,49 +1,353 @@
-# API Development and Documentation Final Project
+# UDACITRIVIA - The Trivia App
 
-## Trivia App
+This project is a trivia game designed by Udacity to test students knowledge of API documentation and development. It is the final project for Course 2 of the Fullstack Nanodegree. This project aims to test students knowledge of API development, testing, and documentation while ensuring that students follow HTTP and API development best practices.
 
-Udacity is invested in creating bonding experiences for its employees and students. A bunch of team members got the idea to hold trivia on a regular basis and created a webpage to manage the trivia app and play the game, but their API experience is limited and still needs to be built out.
+All backend code follows [PEP8 style guidelines](https://www.python.org/dev/peps/pep-0008/).
 
-That's where you come in! Help them finish the trivia app so they can start holding trivia and seeing who's the most knowledgeable of the bunch. The application must:
+## Getting Started
 
-1. Display questions - both all questions and by category. Questions should show the question, category and difficulty rating by default and can show/hide the answer.
-2. Delete questions.
-3. Add questions and require that they include question and answer text.
-4. Search for questions based on a text query string.
-5. Play the quiz game, randomizing either all questions or within a specific category.
+### Pre-requisites and Local Development
 
-Completing this trivia app will give you the ability to structure plan, implement, and test an API - skills essential for enabling your future applications to communicate with others.
+Before starting this project, you should already have Python3,
+pip and node installed on your local machines. Pipenv is also recommended to help with virtual environments.
 
-## Starting and Submitting the Project
+#### Backend
 
-[Fork](https://help.github.com/en/articles/fork-a-repo) the project repository and [clone](https://help.github.com/en/articles/cloning-a-repository) your forked repository to your machine. Work on the project locally and make sure to push all your changes to the remote repository before submitting the link to your repository in the Classroom.
+From the backend folder run `pip install requirements.txt`.
 
-## About the Stack
+If you have pipenv installed, you can use `pipenv install -r requirements.txt` instead of `pip`. This would create a virtual environment in your backend folder and install the project dependencies.
 
-We started the full stack application for you. It is designed with some key functional areas:
+All required packages are provided in the requirements file.
 
-### Backend
+To start the application run the following commands in the backend directory:
 
-The [backend](./backend/README.md) directory contains a partially completed Flask and SQLAlchemy server. You will work primarily in `__init__.py` to define your endpoints and can reference models.py for DB and SQLAlchemy setup. These are the files you'd want to edit in the backend:
+On windows cmd
 
-1. `backend/flaskr/__init__.py`
-2. `backend/test_flaskr.py`
+```cmd
+set FLASK_APP=flaskr
+set FLASK_ENV=development
+flask run
+```
 
-> View the [Backend README](./backend/README.md) for more details.
+On windows powershell
 
-### Frontend
+```powershell
+$env: FLASK_APP="flaskr"
+$env: FLASK_ENV="development"
+flask run
+```
 
-The [frontend](./frontend/README.md) directory contains a complete React frontend to consume the data from the Flask server. If you have prior experience building a frontend application, you should feel free to edit the endpoints as you see fit for the backend you design. If you do not have prior experience building a frontend application, you should read through the frontend code before starting and make notes regarding:
+bash
 
-1. What are the end points and HTTP methods the frontend is expecting to consume?
-2. How are the requests from the frontend formatted? Are they expecting certain parameters or payloads?
+```bash
+export FLASK_APP=flaskr
+export FLASK_ENV=development
+flask run
+```
 
-Pay special attention to what data the frontend is expecting from each API response to help guide how you format your API. The places where you may change the frontend behavior, and where you should be looking for the above information, are marked with `TODO`. These are the files you'd want to edit in the frontend:
+The above commands accomplish the following:
 
-1. `frontend/src/components/QuestionView.js`
-2. `frontend/src/components/FormView.js`
-3. `frontend/src/components/QuizView.js`
+- `FLASK_APP=flaskr` command specifies the location of our `__init__.py` file for our application.
+- `FLASK_ENV` lets us work in development mode which restarts the server whenever changes are made and shows an interactive debugger in the console.
+- `flask run` starts the application
 
-By making notes ahead of time, you will practice the core skill of being able to read and understand code and will have a simple plan to follow to build out the endpoints of your backend API.
+For more information check out the [flask documentation](http://flask.pocoo.org/docs/1.0/tutorial/factory/).
 
-> View the [Frontend README](./frontend/README.md) for more details.
+The application is run on `http://127.0.0.1:5000/` by default and is a proxy in the frontend configuration.
+
+#### Frontend
+
+From the frontend folder, run the following commands to get started:
+
+```cmd
+npm i
+npm start
+```
+
+By default, the frontend runs on `http://localhost:3000`
+
+### Tests
+
+In order to run the tests navigate into the backend folder and run the following commands:
+
+```
+dropdb trivia_test
+createdb trivia_test
+psql trivia_test < trivia.psql
+python test_flaskr.py
+```
+
+If you're running the tests for the first time, leave out the dropdb command.
+
+## API Reference
+
+### Getting Started
+
+- Base URL: This project can only be run locally for now. The backend app is hosted at `http://127.0.0.1:5000/api/v1/` by default. This is set as a proxy in the fronted configuration.
+
+- Authentication: This version of the application doesn't require authentication or API keys.
+
+### Error Handling
+
+All errors are returned as JSON objects in the following format:
+
+```Json
+{
+    "success": False,
+    "error": 404,
+    "message": "resource not found"
+}
+```
+
+The API returns four types of errors for failed requests:
+
+| Error | Description           |
+| ----- | --------------------- |
+| `400` | Bad Request           |
+| `404` | Resource Not Found    |
+| `405` | Method Not allowed    |
+| `422` | Unprocessable Request |
+
+### Endpoints
+
+#### **GET** /questions
+
+- General:
+
+  - Returns a list question objects, category objects, success value, current_category and total number of questions.
+  - Results are paginated in groups of 10. To access different pages, specify page as a query parameter, starting from 1. The default value of page is 1.
+
+- Sample: `curl --location --request GET "http://127.0.0.1:5000/api/v1/questions?page=2"`
+
+```JSON
+{
+  "categories": {
+    "1": "Science",
+    "2": "Art",
+    "3": "Geography",
+    "4": "History",
+    "5": "Entertainment",
+    "6": "Sports"
+  },
+  "current_category": "History",
+  "questions": [
+    {
+      "answer": "Maya Angelou",
+      "category": 4,
+      "difficulty": 2,
+      "id": 5,
+      "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+    },
+    {
+      "answer": "Muhammad Ali",
+      "category": 4,
+      "difficulty": 1,
+      "id": 9,
+      "question": "What boxer's original name is Cassius Clay?"
+    },
+    {
+      "answer": "Apollo 13",
+      "category": 5,
+      "difficulty": 4,
+      "id": 2,
+      "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    },
+    {
+      "answer": "Tom Cruise",
+      "category": 5,
+      "difficulty": 4,
+      "id": 4,
+      "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+    },
+    {
+      "answer": "Edward Scissorhands",
+      "category": 5,
+      "difficulty": 3,
+      "id": 6,
+      "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+    },
+    {
+      "answer": "Brazil",
+      "category": 6,
+      "difficulty": 3,
+      "id": 10,
+      "question": "Which is the only team to play in every soccer World Cup tournament?"
+    },
+    {
+      "answer": "Uruguay",
+      "category": 6,
+      "difficulty": 4,
+      "id": 11,
+      "question": "Which country won the first ever soccer World Cup in 1930?"
+    },
+    {
+      "answer": "George Washington Carver",
+      "category": 4,
+      "difficulty": 2,
+      "id": 12,
+      "question": "Who invented Peanut Butter?"
+    },
+    {
+      "answer": "Lake Victoria",
+      "category": 3,
+      "difficulty": 2,
+      "id": 13,
+      "question": "What is the largest lake in Africa?"
+    }
+  ],
+  "success": true,
+  "total_questions": 19
+}
+```
+
+#### **POST** /questions
+
+- General: Creates a new question based on the submitted question, answer, category and difficulty and returns only a success value.
+
+- Sample: ` curl --location --request POST "http://127.0.0.1:5000/api/v1/questions" --header "Content-Type: application/json" --data-raw "{ \"question\": \"How old is the President of Nigeria\", \"answer\": \"75\", \"difficulty\": 3, \"category\": 2}"`
+
+```JSON
+{
+  "success": true
+}
+```
+
+- Search: If a searchTerm is specified, rather than creating a new question, it returns all questions where the searchTerm is a substring of the question. The questions returned are also paginated
+
+- `curl --location --request POST "http://127.0.0.1:5000/api/v1/questions" --header "Content-Type: application/json" --data-raw "{\"searchTerm\":\"who\"}"`
+
+```JSON
+"current_category": "History",
+    "questions": [
+        {
+            "answer": "Maya Angelou",
+            "category": 4,
+            "difficulty": 2,
+            "id": 5,
+            "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+        },
+        {
+            "answer": "George Washington Carver",
+            "category": 4,
+            "difficulty": 2,
+            "id": 12,
+            "question": "Who invented Peanut Butter?"
+        },
+        {
+            "answer": "Alexander Fleming",
+            "category": 1,
+            "difficulty": 3,
+            "id": 21,
+            "question": "Who discovered penicillin?"
+        }
+    ],
+    "success": true,
+    "total_questions": 3
+}
+```
+
+#### **DELETE** /questions/{id}
+
+- General: Deletes question with the specified id and returns the id of the deleted question and a success value
+- `curl --location --request DELETE "http://127.0.0.1:5000/api/v1/questions/2"`
+
+```JSON
+{
+  "success":true,
+  "deleted":2
+}
+```
+
+#### **GET** /categories
+
+- General: returns an object or dictionary with key of category-id and value of category-type and a success value.
+- `curl --location --request GET "http://127.0.0.1:5000/api/v1/categories"`
+
+```JSON
+{
+    "categories": {
+        "1": "Science",
+        "2": "Art",
+        "3": "Geography",
+        "4": "History",
+        "5": "Entertainment",
+        "6": "Sports"
+    },
+    "success": true
+}
+```
+
+#### **GET** /categories/{id}/questions
+
+- General: It returns all the questions in a given category, total number of questions, current category and a success value. The id refers to the id of the category. The questions are paginated.
+- `curl --location --request GET "http://127.0.0.1:5000/api/v1/categories/5/questions"`
+
+```JSON
+{
+    "current_category": "Entertainment",
+    "questions": [
+        {
+            "answer": "Apollo 13",
+            "category": 5,
+            "difficulty": 4,
+            "id": 2,
+            "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+        },
+        {
+            "answer": "Tom Cruise",
+            "category": 5,
+            "difficulty": 4,
+            "id": 4,
+            "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+        },
+        {
+            "answer": "Edward Scissorhands",
+            "category": 5,
+            "difficulty": 3,
+            "id": 6,
+            "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+        }
+    ],
+    "success": true,
+    "total_questions": 3
+}
+```
+
+#### **POST** /quizzes
+
+- General: The quizzes endpoint requires a list of previous questions and an optional quiz category parameter. It returns a new question and a success value. The returned question is not contained in previous questions and is from the specified category (if category is specified).
+
+The expected format for quiz category is shown below
+
+```JSON
+{
+  "id" : 2,
+  "type" : "Art"
+}
+```
+
+- `curl --location --request POST "http://127.0.0.1:5000/api/v1/quizzes" --header "Content-Type: application/json" --data-raw "{ \"previous_questions\": [2,3,5,4], \"quiz_category\":{\"id\":2, \"type\":\"Art\"} }"`
+
+```JSON
+{
+    "question": {
+        "answer": "75",
+        "category": 2,
+        "difficulty": 3,
+        "id": 41,
+        "question": "How old is the President of Nigeria"
+    },
+    "success": true
+}
+```
+
+## Deployment N/A
+
+## Authors
+
+- Awe Ayomidipupo
+- Udacity
+
+## Acknowledgements
+
+ALX-T, Udacity Team and most importantly God!
