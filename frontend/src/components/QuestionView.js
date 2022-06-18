@@ -13,6 +13,7 @@ class QuestionView extends Component {
       totalQuestions: 0,
       categories: {},
       currentCategory: null,
+      search: null,
     };
   }
 
@@ -30,6 +31,7 @@ class QuestionView extends Component {
           totalQuestions: result.total_questions,
           categories: result.categories,
           currentCategory: result.current_category,
+          search: null,
         });
         return;
       },
@@ -41,7 +43,21 @@ class QuestionView extends Component {
   };
 
   selectPage(num) {
-    this.setState({ page: num }, () => this.getQuestions());
+    this.setState({ page: num }, () => {
+      if (this.state.currentCategory) {
+        const id = Object.keys(this.state.categories).filter((key) => {
+          if (this.state.categories[key] === this.state.currentCategory)
+            return true;
+
+          return false;
+        });
+        this.getByCategory(id);
+      } else if (this.state.search && this.state.currentCategory == null) {
+        this.submitSearch(this.state.search);
+      } else {
+        this.getQuestions();
+      }
+    });
   }
 
   createPagination() {
@@ -65,13 +81,14 @@ class QuestionView extends Component {
 
   getByCategory = (id) => {
     $.ajax({
-      url: `/api/v1/categories/${id}/questions`, //TODO: update request URL
+      url: `/api/v1/categories/${id}/questions?page=${this.state.page}`, //TODO: update request URL
       type: "GET",
       success: (result) => {
         this.setState({
           questions: result.questions,
           totalQuestions: result.total_questions,
           currentCategory: result.current_category,
+          search: null,
         });
         return;
       },
@@ -84,7 +101,7 @@ class QuestionView extends Component {
 
   submitSearch = (searchTerm) => {
     $.ajax({
-      url: `/api/v1/questions`, //TODO: update request URL
+      url: `/api/v1/questions?page=${this.state.page}`, //TODO: update request URL
       type: "POST",
       dataType: "json",
       contentType: "application/json",
@@ -142,7 +159,9 @@ class QuestionView extends Component {
               <li
                 key={id}
                 onClick={() => {
-                  this.getByCategory(id);
+                  this.setState({ page: 1 }, () => {
+                    this.getByCategory(id);
+                  });
                 }}
               >
                 {this.state.categories[id]}
@@ -154,7 +173,14 @@ class QuestionView extends Component {
               </li>
             ))}
           </ul>
-          <Search submitSearch={this.submitSearch} />
+          <Search
+            submitSearch={(searchTerm) =>
+              this.setState({ page: 1 }, () => {
+                this.submitSearch(searchTerm);
+                this.setState({ search: searchTerm });
+              })
+            }
+          />
         </div>
         <div className="questions-list">
           <h2>Questions</h2>

@@ -17,6 +17,17 @@ def format_categories(categories):
         result[category["id"]] = category["type"]
     return result
 
+
+# paginate questions
+def paginate_questions(request,questions):
+        page = request.args.get("page", 1, type=int)
+        start = (page - 1) * QUESTIONS_PER_PAGE
+        end = start + QUESTIONS_PER_PAGE
+
+        all_questions = [question.format() for question in questions]
+        current_questions = all_questions[start:end]
+
+        return current_questions
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
@@ -39,6 +50,7 @@ def create_app(test_config=None):
         return response
 
     """
+
     @TODO:
     Create an endpoint to handle GET requests
     for all available categories.
@@ -62,17 +74,15 @@ def create_app(test_config=None):
     def get_paginated_questions():
         questions = Question.query.all()
         categories = Category.query.all()
-
+        page = request.args.get("page", 1, type=int)
         formatted_categories = format_categories(categories)
 
-        page = request.args.get("page", 1, type=int)
-        start = (page - 1) * QUESTIONS_PER_PAGE
-        end = start + QUESTIONS_PER_PAGE
+        
 
         all_questions = [question.format() for question in questions]
-        current_questions = all_questions[start:end]
+        current_questions = paginate_questions(request,questions)
 
-        if(len(current_questions)==0):
+        if(len(current_questions)==0 and page != 1):
             abort(404)
 
         return jsonify({
@@ -80,7 +90,7 @@ def create_app(test_config=None):
             "total_questions":len(all_questions),
             "questions":current_questions,
             "categories": formatted_categories,
-            "current_category": "History"
+            "current_category": None
         })
 
 
@@ -130,11 +140,14 @@ def create_app(test_config=None):
     TEST: When you submit a question on the "Add" tab,
     the form will clear and the question will appear at the end of the last page
     of the questions list in the "List" tab.
+
+
     """
 
     @app.route("/api/v1/questions", methods =["POST"])
     def create_new_questions():
         body = request.get_json()
+        page = request.args.get("page", 1, type=int)
 
         question = body.get("question",None)
         answer = body.get("answer",None)
@@ -145,14 +158,17 @@ def create_app(test_config=None):
         try:
             if search:
                 questions = Question.query.filter(Question.question.ilike('%{}%'.format(search))).all()
-                formatted_questions = [t_question.format() for t_question in questions]
+                formatted_questions = paginate_questions(request,questions)
+
+                if(len(formatted_questions)==0 and page != 1):
+                    abort(404)
                 #print(for)
 
                 return jsonify({
                     "success":True,
                     "questions":formatted_questions,
                     "total_questions":len(questions),
-                    "current_category":"History"
+                    "current_category": None
                 })
             else:
                 if (question=="") or (answer == "") or (category == None) or (difficulty == None):
@@ -200,12 +216,16 @@ def create_app(test_config=None):
     @app.route("/api/v1/categories/<int:category_id>/questions",methods=["GET"])
     def get_question_by_category(category_id):
         category = Category.query.get(category_id)
+        page = request.args.get("page", 1, type=int)
 
         if category == None:
             abort(404)
 
         questions = Question.query.filter(Question.category==category_id).all()
-        formatted_questions = [question.format() for question in questions]
+        formatted_questions = paginate_questions(request,questions)
+
+        if(len(formatted_questions)==0 and page != 1):
+            abort(404)
 
         return jsonify({
             "success": True,
