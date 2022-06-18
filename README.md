@@ -93,7 +93,7 @@ All errors are returned as JSON objects in the following format:
 
 ```Json
 {
-    "success": False,
+    "success": false,
     "error": 404,
     "message": "resource not found"
 }
@@ -217,7 +217,7 @@ The API returns four types of errors for failed requests:
 - `curl --location --request POST "http://127.0.0.1:5000/api/v1/questions" --header "Content-Type: application/json" --data-raw "{\"searchTerm\":\"who\"}"`
 
 ```JSON
-"current_category": "History",
+{"current_category": "History",
     "questions": [
         {
             "answer": "Maya Angelou",
