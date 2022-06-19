@@ -15,7 +15,7 @@ pip and node installed on your local machines. Pipenv is also recommended to hel
 
 From the backend folder run `pip install pipenv`.
 
-If you have pipenv installed, you can use `pipenv install` instead of `pip`. This would create a virtual environment in your backend folder and install the project dependencies.
+Now that you have pipenv installed, run `pipenv install`. This would create a virtual environment in your backend folder and install all the project dependencies.
 
 All required packages are provided in the pipfile.
 
