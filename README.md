@@ -93,7 +93,7 @@ All errors are returned as JSON objects in the following format:
 
 ```Json
 {
-    "success": False,
+    "success": false,
     "error": 404,
     "message": "resource not found"
 }
@@ -105,8 +105,9 @@ The API returns four types of errors for failed requests:
 | ----- | --------------------- |
 | `400` | Bad Request           |
 | `404` | Resource Not Found    |
-| `405` | Method Not allowed    |
+| `405` | Method Not Allowed    |
 | `422` | Unprocessable Request |
+| `500` | Internal Server Error |
 
 ### Endpoints
 
