@@ -1,11 +1,13 @@
 import os
-from socketserver import DatagramRequestHandler
 import unittest
 import json
 from flask_sqlalchemy import SQLAlchemy
 
 from flaskr import create_app
 from models import setup_db, Question, Category
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class TriviaTestCase(unittest.TestCase):
@@ -16,7 +18,10 @@ class TriviaTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "trivia_test"
-        self.database_path = "postgresql://{}:{}@{}/{}".format("postgres","Aweayo",'localhost:5432', self.database_name)
+        self.db_user = os.environ["db_user"]
+        self.db_password = os.environ["db_password"]
+        self.db_host = os.environ["db_host"]
+        self.database_path = "postgresql://{}:{}@{}/{}".format(self.db_user,self.db_password,self.db_host, self.database_name)
         setup_db(self.app, self.database_path)
 
         self.new_question = {
@@ -78,7 +83,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(len(data["questions"]))
         self.assertTrue(data["total_questions"])
         self.assertTrue(len(data["categories"]))
-        self.assertTrue(data["current_category"])
+        self.assertEqual(data["current_category"],None)
         pass
 
     def test_404_page_exceeded_number_of_questions(self):
@@ -144,7 +149,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"],True)
         self.assertEqual(data["total_questions"],8)
         self.assertTrue(len(data["questions"]))
-        self.assertTrue(data["current_category"])
+        self.assertEqual(data["current_category"],None)
 
         pass
 
@@ -156,7 +161,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"],True)
         self.assertEqual(data["total_questions"],0)
         self.assertEqual(len(data["questions"]),0)
-        self.assertTrue(data["current_category"])
+        self.assertEqual(data["current_category"],None)
         
         pass
 
