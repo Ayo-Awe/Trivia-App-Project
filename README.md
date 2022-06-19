@@ -99,7 +99,7 @@ All errors are returned as JSON objects in the following format:
 }
 ```
 
-The API returns four types of errors for failed requests:
+The API returns fives types of errors for failed requests:
 
 | Error | Description           |
 | ----- | --------------------- |
@@ -108,6 +108,32 @@ The API returns four types of errors for failed requests:
 | `405` | Method Not Allowed    |
 | `422` | Unprocessable Request |
 | `500` | Internal Server Error |
+
+### Environment Variables
+
+You're required to provide the following environment variables for the backend application to successfully connect to the database.
+
+| Environment variable | Description                                  |
+| -------------------- | -------------------------------------------- |
+| `db_user`            | This refers to the database e.g postgres     |
+| `db_password`        | This is the password for the database user   |
+| `db_host`            | This is the database host e.g localhost:5432 |
+
+The environment variables can either be provided in a .env file
+
+```env
+db_user=dbusername
+db_password=yourpassword
+db_host=localhost:5432
+```
+
+They can also be exported in the terminal as seen below (for a linux terminal)
+
+```bash
+export db_user=dbusername
+export db_password=yourpassword
+export db_host=localhost:5432
+```
 
 ### Endpoints
 
