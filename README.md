@@ -11,13 +11,13 @@ All backend code follows [PEP8 style guidelines](https://www.python.org/dev/peps
 Before starting this project, you should already have Python3,
 pip and node installed on your local machines. Pipenv is also recommended to help with virtual environments.
 
-#### Backend
+#### **Backend**
 
-From the backend folder run `pip install requirements.txt`.
+From the backend folder run `pip install pipenv`.
 
-If you have pipenv installed, you can use `pipenv install -r requirements.txt` instead of `pip`. This would create a virtual environment in your backend folder and install the project dependencies.
+If you have pipenv installed, you can use `pipenv install` instead of `pip`. This would create a virtual environment in your backend folder and install the project dependencies.
 
-All required packages are provided in the requirements file.
+All required packages are provided in the pipfile.
 
 To start the application run the following commands in the backend directory:
 
@@ -32,8 +32,8 @@ flask run
 On windows powershell
 
 ```powershell
-$env: FLASK_APP="flaskr"
-$env: FLASK_ENV="development"
+$env: FLASK_APP = "flaskr"
+$env: FLASK_ENV = "development"
 flask run
 ```
 
@@ -55,7 +55,41 @@ For more information check out the [flask documentation](http://flask.pocoo.org/
 
 The application is run on `http://127.0.0.1:5000/` by default and is a proxy in the frontend configuration.
 
-#### Frontend
+#### **Database Setup**
+
+To setup the database with mock data, run the following commands
+
+```
+dropdb trivia
+createdb trivia
+psql trivia < trivia.psql
+```
+
+To successfully connect to the database, you're required to provide the following environment variables:
+
+| Environment variable | Description                                  |
+| -------------------- | -------------------------------------------- |
+| `db_user`            | This refers to the database e.g postgres     |
+| `db_password`        | This is the password for the database user   |
+| `db_host`            | This is the database host e.g localhost:5432 |
+
+The environment variables can either be provided in a .env file, like this (recommended)
+
+```env
+db_user=dbusername
+db_password=yourpassword
+db_host=localhost:5432
+```
+
+or they can be exported in the terminal as seen below (for a linux terminal)
+
+```bash
+export db_user=dbusername
+export db_password=yourpassword
+export db_host=localhost:5432
+```
+
+#### **Frontend**
 
 From the frontend folder, run the following commands to get started:
 
@@ -66,7 +100,7 @@ npm start
 
 By default, the frontend runs on `http://localhost:3000`
 
-### Tests
+### **Tests**
 
 In order to run the tests navigate into the backend folder and run the following commands:
 
@@ -108,32 +142,6 @@ The API returns fives types of errors for failed requests:
 | `405` | Method Not Allowed    |
 | `422` | Unprocessable Request |
 | `500` | Internal Server Error |
-
-### Environment Variables
-
-You're required to provide the following environment variables for the backend application to successfully connect to the database.
-
-| Environment variable | Description                                  |
-| -------------------- | -------------------------------------------- |
-| `db_user`            | This refers to the database e.g postgres     |
-| `db_password`        | This is the password for the database user   |
-| `db_host`            | This is the database host e.g localhost:5432 |
-
-The environment variables can either be provided in a .env file
-
-```env
-db_user=dbusername
-db_password=yourpassword
-db_host=localhost:5432
-```
-
-They can also be exported in the terminal as seen below (for a linux terminal)
-
-```bash
-export db_user=dbusername
-export db_password=yourpassword
-export db_host=localhost:5432
-```
 
 ### Endpoints
 
