@@ -14,6 +14,13 @@ Thumbs.db
 env/
 frontend/node_modules/
 
+#.env files
+/backend/.env
+
 #pipfiles
 /backend/pipfile
 /backend/pipfile.lock
+
+
+
+
